@@ -183,10 +183,6 @@ cube emve_resamp(mat x, umat x_nonmiss, vec pu, int n, int p, vec theta0, mat G,
 		GetRNGstate(); /* set the seed from R? */
 		for(int i=0; i < nResample; i++)
 		{
-			// rcond number for the est cov matrix for each subsample
-			//double cand_S_rcond = 0;
-			//double minRcond = minRcondition; // minRcond to be relaxed
-			//int k_res_iter = 0;
 			bool keep_subsamp = true;
 			rk = 0;
 			// keep resample until obtain a good subsample
@@ -196,11 +192,6 @@ cube emve_resamp(mat x, umat x_nonmiss, vec pu, int n, int p, vec theta0, mat G,
 				urowvec b = sum( subsample_nonmiss );
 				if( b.min() > 0 ){
 					cand_S = cov(subsample);
-					//cand_S_rcond = rcond( cand_S, p );
-					//if( k_res_iter % 2 == 0 && minRcond > ABS_MIN_RCOND) minRcond = minRcond / 10;
-					//if( minRcond > ABS_MIN_RCOND) minRcond = minRcond / 10;
-					//keep_subsamp = (cand_S_rcond < minRcond) && (k_res_iter < MAX_RESAMPLE_ITER);
-					//k_res_iter++;
 					keep_subsamp = false;
 				}
 			}
@@ -250,74 +241,6 @@ cube emve_resamp(mat x, umat x_nonmiss, vec pu, int n, int p, vec theta0, mat G,
 				}
 			}
 		}
-
-		/*****************************************************************/
-		// candidate Gaussian MLE based on the entire sample
-		// mat cand_res_all = CovEM(x, n, p, theta0, G, d, miss_group_unique, miss_group_counts, 
-			// miss_group_obs_col, miss_group_mis_col, miss_group_p, miss_group_n, 0.0001, EM_maxits);
-		// cand_res_all.shed_rows(0,1);
-		// cand_mu = cand_res_all.row(0);
-		// cand_S =  cand_res_all.rows(1,p);
-
-		// rk = arma::rank(cand_S);
-		// if( rk == p){
-		// // rescale the subsamples scatter matrix based on the subsample (not the whole sample)
-		// sc_constr = emve_scale_constraint(cand_S, miss_group_unique, miss_group_counts );
-		// cand_S = cand_S * sc_constr;
-
-		// // compute EMVE scale
-		// x_mu_diff = x; x_mu_diff.each_row() -= cand_mu;
-		// pmd = fast_pmd(x_mu_diff, cand_S, miss_group_unique, miss_group_counts);
-		// cand_sc = emve_scale(pmd, cc, ck);
-		// max_cand_scale = cand_scale.max(curMaxScaleInd);
-		// if(cand_sc < cand_scale(curMaxScaleInd) ) {
-			// cand_list.slice(curMaxScaleInd)(0,0) = cand_sc;
-			// cand_list.slice(curMaxScaleInd).row(1) = cand_mu;
-			// cand_list.slice(curMaxScaleInd).rows(2,p+1) = cand_S;
-			// cand_scale(curMaxScaleInd) = cand_sc;
-			// cand_list_pmd.col(curMaxScaleInd) = pmd;
-			// if(nsubsamp < nCand) nsubsamp++;
-		// }
-		// }
-		
-		// final concentration step
-		// for(int i = 0; i < nsubsamp; i++){
-			// cand_sc = cand_list.slice(i)(0,0);
-			// cand_mu = cand_list.slice(i).row(1);
-			// cand_S = cand_list.slice(i).rows(2,p+1);
-			// pmd = cand_list_pmd.col(i);
-
-			// // select 50% of data points with smallest adj pmd
-			// pmd = pmd/cand_sc;
-			// mat cand_res_concentrate = concentrate_step( x, x_nonmiss, pu, pmd_mem, 
-				// x_miss_group_match, miss_group_unique, miss_group_counts, 
-				// miss_group_obs_col, miss_group_mis_col, miss_group_p, miss_group_n,
-				// n, n_half, p, theta0, G, d, EM_maxits, 
-				// xh_mem, misgrpuqh_mem, msgrpcth_mem, 
-				// msgrpoch_mem, msgrpmch_mem, msgrpph_mem);
-			// cand_mu = cand_res_concentrate.row(0);
-			// cand_S =  cand_res_concentrate.rows(1,p);
-
-			// rk = arma::rank(cand_S);
-			// if( rk == p){
-			// // rescale the subsamples scatter matrix based on the subsample 
-			// sc_constr = emve_scale_constraint(cand_S, miss_group_unique, miss_group_counts );
-			// cand_S = cand_S * sc_constr;
-
-			// // compute EMVE scale
-			// x_mu_diff = x; x_mu_diff.each_row() -= cand_mu;
-			// pmd = fast_pmd(x_mu_diff, cand_S, miss_group_unique, miss_group_counts);
-			// cand_sc = emve_scale(pmd, cc, ck);
-			// // store the candidates if the scale is larger than the current maximum scale 
-			// if( cand_sc < cand_list.slice(i)(0,0) ){
-				// cand_list.slice(i)(0,0) = cand_sc;
-				// cand_list.slice(i).row(1) = cand_mu;
-				// cand_list.slice(i).rows(2,p+1) = cand_S;
-				// cand_scale(i) = cand_sc;
-			// }
-			// }
-		// }
-
 		// Export only the min scale candidate
 		cube cand_list_final(p+2,p,1);
 		min_cand_scale = cand_scale.min(curMinScaleInd);
