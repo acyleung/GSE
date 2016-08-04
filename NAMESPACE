@@ -1,0 +1,53 @@
+useDynLib(GSE, .registration=TRUE)
+
+importFrom(MASS, mvrnorm)
+importFrom("graphics", "par")
+importFrom("grDevices", "dev.interactive")
+importFrom("stats", "mahalanobis", "cor", "mad", "median", "na.omit", "pchisq", "qchisq", "rnorm", "runif", "var")
+
+
+import(Rcpp)
+import(ggplot2)
+import(methods)
+
+exportPattern("^[[:alpha:]]+")
+
+export(
+	slrt, 
+	CovEM, 
+	emve, 
+	HuberPairwise,
+	GSE, 
+	partial.mahalanobis,
+	TSGS,
+	generate.randcorr,
+	generate.cellcontam,
+	generate.casecontam
+)
+
+exportClasses(
+	GSE, 
+	emve,
+	HuberPairwise,
+	CovRobMiss,
+	SummaryCov,
+	TSGS
+)
+
+exportMethods(
+	show,
+	summary,
+	plot,
+	getDist,
+	getDistAdj,
+	getMissing,
+	getOutliers,
+	getDim,
+	getLocation,
+	getScatter,
+	getScale,
+	getFiltDat
+)
+
+
+
