@@ -1,0 +1,6 @@
+src/Makevars
+src/Makevars.win
+
+src-i386/*
+src-x64/*
+
