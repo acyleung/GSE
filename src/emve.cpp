@@ -29,7 +29,7 @@ vec fast_pmd(mat x_mu_diff, mat sigma, umat miss_group_unique, uvec miss_group_c
 void subsampling(double* subsample_mem, unsigned int* subsamp_nonmis_mem, 
 	mat x, umat x_nonmiss, int nSubsampleSize, int p, int n);
 double rcond(mat A, int p); //ok
-mat concentrate_step(mat x, umat x_nonmiss, vec pu, double* pmd_mem, uvec x_miss_group_match,
+mat concentrate_step(mat x, umat x_nonmiss, vec pu, vec pmd, uvec x_miss_group_match,
 	umat miss_group_unique, uvec miss_group_counts, 
 	umat miss_group_obs_col, umat miss_group_mis_col, uvec miss_group_p, int miss_group_n,
 	int n, int n_half, int p, vec theta0, mat G, int d, int EM_maxits, 
@@ -161,7 +161,6 @@ cube emve_resamp(mat x, umat x_nonmiss, vec pu, int n, int p, vec theta0, mat G,
 		uword curMinScaleInd = 0;
 		mat x_mu_diff(n,p);
 		vec pmd(n);
-		double* pmd_mem = pmd.memptr();
 		
 		// for subsampling
 		mat subsample(nSubsampleSize, p); double* subsample_mem = subsample.memptr();
@@ -210,7 +209,7 @@ cube emve_resamp(mat x, umat x_nonmiss, vec pu, int n, int p, vec theta0, mat G,
 
 				// concentration step: select 50% of data points with smallest adj pmd
 				pmd = pmd/cand_sc;
-				mat cand_res_concentrate = concentrate_step( x, x_nonmiss, pu, pmd_mem, 
+				mat cand_res_concentrate = concentrate_step( x, x_nonmiss, pu, pmd, 
 					x_miss_group_match, miss_group_unique, miss_group_counts, 
 					miss_group_obs_col, miss_group_mis_col, miss_group_p, miss_group_n,
 					n, n_half, p, theta0, G, d, EM_maxits, 
@@ -261,7 +260,7 @@ cube emve_resamp(mat x, umat x_nonmiss, vec pu, int n, int p, vec theta0, mat G,
 }
 
 
-mat concentrate_step(mat x, umat x_nonmiss, vec pu, double* pmd_mem, uvec x_miss_group_match,
+mat concentrate_step(mat x, umat x_nonmiss, vec pu, vec pmd, uvec x_miss_group_match,
 	umat miss_group_unique, uvec miss_group_counts, 
 	umat miss_group_obs_col, umat miss_group_mis_col, uvec miss_group_p, int miss_group_n,
 	int n, int n_half, int p, vec theta0, mat G, int d, int EM_maxits, 
@@ -269,7 +268,6 @@ mat concentrate_step(mat x, umat x_nonmiss, vec pu, double* pmd_mem, uvec x_miss
 	unsigned int* msgrpoch_mem, unsigned int* msgrpmch_mem, unsigned int* msgrpph_mem)
 {
 	// information required for subsampling
-	vec pmd(pmd_mem, n, false, true);
 	mat x_half(xh_mem, n_half, p, false, true); 
 	umat miss_grp_uq_half( misgrpuqh_mem, miss_group_n, p, false, true); miss_grp_uq_half.zeros();
 	uvec miss_grp_cts_half( msgrpcth_mem, miss_group_n, false, true); miss_grp_cts_half.zeros();
@@ -279,9 +277,10 @@ mat concentrate_step(mat x, umat x_nonmiss, vec pu, double* pmd_mem, uvec x_miss
 	int miss_grp_n_half;
 
 	// compute adjusted pmd
-	for(int i = 0; i < n; i++) pmd(i) = R::pchisq(pmd(i), (double) pu(i), 1, 0);	
-	double pmd_med = median(pmd);
-	uvec x_half_ind = find( pmd <= pmd_med, n_half);
+    vec pmd_adj(n);
+	for(int i = 0; i < n; i++) pmd_adj(i) = R::pchisq(pmd(i), (double) pu(i), 1, 0);	
+	double pmd_adj_med = median(pmd_adj);
+	uvec x_half_ind = find( pmd_adj <= pmd_adj_med, n_half);
 
 	// find new missing pattern based on the halved samples
 	int miss_new_add = -1;
