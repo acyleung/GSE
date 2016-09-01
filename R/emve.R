@@ -103,7 +103,7 @@ emve <- function(x, n.resample=600, maxits=3, seed)
 	x_filled <- x_filled + a
 	
 	res <- .emve.Rcpp(x_filled, x_nonmiss, pu, n, p, theta0, G, d, x.miss.group.match, miss.group.unique, miss.group.counts,
-			miss.group.obs.col, miss.group.mis.col, miss.group.p, miss.group.n, n.resample, n.sub.size, 1e-7, cc, ck, maxits)
+			miss.group.obs.col, miss.group.mis.col, miss.group.p, miss.group.n, n.resample, n.sub.size, cc, ck, maxits)
 	res <- list(
 		S = res$S0,
 		mu = res$mu0,

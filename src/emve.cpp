@@ -13,22 +13,19 @@ using namespace std;
 // Export to R
 SEXP emve_Rcpp(SEXP X, SEXP X_nonmiss, SEXP Pu, SEXP N, SEXP P, SEXP Theta0, SEXP GG, SEXP D, SEXP X_miss_group_match,
     SEXP Miss_group_unique, SEXP Miss_group_counts, SEXP Miss_group_obs_col, SEXP Miss_group_mis_col,
-    SEXP Miss_group_p, SEXP Miss_group_n, SEXP NResample, SEXP NSubsampleSize, SEXP MinRcondition, 
-    SEXP CC, SEXP CK, SEXP Maxits);
+    SEXP Miss_group_p, SEXP Miss_group_n, SEXP NResample, SEXP NSubsampleSize, SEXP CC, SEXP CK, SEXP Maxits);
 SEXP fast_partial_mahalanobis(SEXP X_mu_diff, SEXP Sigma, SEXP Miss_group_unique, SEXP Miss_group_counts);
 
 // Internal C++ functions
 cube emve_resamp(mat x, umat x_nonmiss, vec pu, int n, int p, vec theta0, mat G, int d, 
     uvec x_miss_group_match, umat miss_group_unique, uvec miss_group_counts, 
     umat miss_group_obs_col, umat miss_group_mis_col, uvec miss_group_p, int miss_group_n,
-    int nResample, int nSubsampleSize, 
-    double minRcondition, vec cc, vec ck, int EM_maxits);
+    int nResample, int nSubsampleSize, vec cc, vec ck, int EM_maxits);
 double emve_scale_constraint( mat sigma, umat miss_group_unique, uvec miss_group_counts );//ok
 double emve_scale(vec d, vec cc, vec ck); //ok
 vec fast_pmd(mat x_mu_diff, mat sigma, umat miss_group_unique, uvec miss_group_counts); //ok
 void subsampling(double* subsample_mem, unsigned int* subsamp_nonmis_mem, 
     mat x, umat x_nonmiss, int nSubsampleSize, int p, int n);
-double rcond(mat A, int p); //ok
 mat concentrate_step(mat x, umat x_nonmiss, vec pu, double* pmd_mem, uvec x_miss_group_match,
     umat miss_group_unique, uvec miss_group_counts, 
     umat miss_group_obs_col, umat miss_group_mis_col, uvec miss_group_p, int miss_group_n,
@@ -59,8 +56,7 @@ vec iterEM( double* theta_mem, double* tobs_mem, int d, double* G_mem, int G_nco
 /***************************************************/
 SEXP emve_Rcpp(SEXP X, SEXP X_nonmiss, SEXP Pu, SEXP N, SEXP P, SEXP Theta0, SEXP GG, SEXP D, SEXP X_miss_group_match,
     SEXP Miss_group_unique, SEXP Miss_group_counts, SEXP Miss_group_obs_col, SEXP Miss_group_mis_col,
-    SEXP Miss_group_p, SEXP Miss_group_n, SEXP NResample, SEXP NSubsampleSize, SEXP MinRcondition, 
-    SEXP CC, SEXP CK, SEXP Maxits)
+    SEXP Miss_group_p, SEXP Miss_group_n, SEXP NResample, SEXP NSubsampleSize, SEXP CC, SEXP CK, SEXP Maxits)
 {
     try{
         mat x = as<mat>(X);
@@ -82,7 +78,6 @@ SEXP emve_Rcpp(SEXP X, SEXP X_nonmiss, SEXP Pu, SEXP N, SEXP P, SEXP Theta0, SEX
 
         int nResample = as<int>(NResample);
         int nSubsampleSize = as<int>(NSubsampleSize);
-        double minRcondition = as<double>(MinRcondition);
         vec cc = as<vec>(CC);
         vec ck = as<vec>(CK);
         int EM_maxits = as<int>(Maxits);
@@ -91,7 +86,7 @@ SEXP emve_Rcpp(SEXP X, SEXP X_nonmiss, SEXP Pu, SEXP N, SEXP P, SEXP Theta0, SEX
         cube cand_list = emve_resamp(x, x_nonmiss, pu, n, p, theta0, G, d, 
                     x_miss_group_match, miss_group_unique, miss_group_counts, 
                     miss_group_obs_col, miss_group_mis_col, miss_group_p, miss_group_n,
-                    nResample, nSubsampleSize, minRcondition, cc, ck, EM_maxits);
+                    nResample, nSubsampleSize, cc, ck, EM_maxits);
             
         return wrap(cand_list);
     } catch( std::exception& __ex__ ){
@@ -131,14 +126,12 @@ SEXP fast_partial_mahalanobis(SEXP X_mu_diff, SEXP Sigma, SEXP Miss_group_unique
 // miss_group_...: information about the missing patterns
 // nResample:	number of subsamples
 // nSubsampleSize:	size for each subsample
-// minRcondition:	threshold of recipricol condition number of subsample during preliminary search
 // cc, kk: 	tuning constants when computing the MVE scale
 // EM_maxits: max num iteration for EM 
 cube emve_resamp(mat x, umat x_nonmiss, vec pu, int n, int p, vec theta0, mat G, int d, 
     uvec x_miss_group_match, umat miss_group_unique, uvec miss_group_counts, 
     umat miss_group_obs_col, umat miss_group_mis_col, uvec miss_group_p, int miss_group_n,
-    int nResample, int nSubsampleSize, 
-    double minRcondition, vec cc, vec ck, int EM_maxits)
+    int nResample, int nSubsampleSize, vec cc, vec ck, int EM_maxits)
 {
     int nCand = 5;
     try{
@@ -183,10 +176,6 @@ cube emve_resamp(mat x, umat x_nonmiss, vec pu, int n, int p, vec theta0, mat G,
         GetRNGstate(); /* set the seed from R? */
         for(int i=0; i < nResample; i++)
         {
-            // rcond number for the est cov matrix for each subsample
-            //double cand_S_rcond = 0;
-            //double minRcond = minRcondition; // minRcond to be relaxed
-            //int k_res_iter = 0;
             bool keep_subsamp = true;
             rk = 0;
             // keep resample until obtain a good subsample
@@ -196,11 +185,6 @@ cube emve_resamp(mat x, umat x_nonmiss, vec pu, int n, int p, vec theta0, mat G,
                 urowvec b = sum( subsample_nonmiss );
                 if( b.min() > 0 ){
                     cand_S = cov(subsample);
-                    //cand_S_rcond = rcond( cand_S, p );
-                    //if( k_res_iter % 2 == 0 && minRcond > ABS_MIN_RCOND) minRcond = minRcond / 10;
-                    //if( minRcond > ABS_MIN_RCOND) minRcond = minRcond / 10;
-                    //keep_subsamp = (cand_S_rcond < minRcond) && (k_res_iter < MAX_RESAMPLE_ITER);
-                    //k_res_iter++;
                     keep_subsamp = false;
                 }
             }
@@ -539,9 +523,6 @@ double emve_scale(vec d, vec cc, vec ck)
 }
 
 
-
-
-
 /********************************************************************/
 // Misc functions
 /********************************************************************/
@@ -558,22 +539,5 @@ void subsampling(double* subsample_mem, unsigned int* subsamp_nonmis_mem,
         subsamp.row(i) = x.row( indi(i) );
         subsamp_nonmiss.row(i) = x_nonmiss.row( indi(i) );
     }
-}
-
-
-
-
-double rcond(mat A, int p){
-    try{
-        vec covAeval = eig_sym(A);
-        double rconditionNum = covAeval(0)/covAeval(p-1);
-        if( rconditionNum < 0) rconditionNum = 0.0;
-        return rconditionNum;
-    } catch( std::exception& __ex__ ){
-        forward_exception_to_r( __ex__ );
-    } catch(...){
-        ::Rf_error( "c++ exception " "(unknown reason)" );
-    }
-    return NA_REAL;
 }
 

@@ -1,8 +1,8 @@
 .emve.Rcpp <- function(x, x_nonmiss, pu, n, p, theta0, G, d, x.miss.group.match, miss.group.unique, miss.group.counts,
-		miss.group.obs.col, miss.group.mis.col, miss.group.p, miss.group.n, nresample, nsubsize, minrcond, cc, ck, EM_maxits){
+		miss.group.obs.col, miss.group.mis.col, miss.group.p, miss.group.n, nresample, nsubsize, cc, ck, EM_maxits){
 
 	res <- tryCatch( .Call("emve_Rcpp", x, x_nonmiss, pu, n, p, theta0, G, d, x.miss.group.match, miss.group.unique, miss.group.counts,
-		miss.group.obs.col, miss.group.mis.col, miss.group.p, miss.group.n, nresample, nsubsize, minrcond, cc, ck, EM_maxits),
+		miss.group.obs.col, miss.group.mis.col, miss.group.p, miss.group.n, nresample, nsubsize, cc, ck, EM_maxits),
 		"std::range_error" = function(e){
 		conditionMessage( e ) } )
 
