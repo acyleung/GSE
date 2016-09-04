@@ -13,19 +13,19 @@ using namespace std;
 // Export to R
 SEXP emve_Rcpp(SEXP X, SEXP X_nonmiss, SEXP Pu, SEXP N, SEXP P, SEXP Theta0, SEXP GG, SEXP D, SEXP X_miss_group_match,
     SEXP Miss_group_unique, SEXP Miss_group_counts, SEXP Miss_group_obs_col, SEXP Miss_group_mis_col,
-    SEXP Miss_group_p, SEXP Miss_group_n, SEXP NResample, SEXP NSubsampleSize, SEXP CC, SEXP CK, SEXP Maxits);
+    SEXP Miss_group_p, SEXP Miss_group_n, SEXP NResample, SEXP NSubsampleSize, SEXP Subsample_ID, SEXP CC, SEXP CK, SEXP Maxits);
 SEXP fast_partial_mahalanobis(SEXP X_mu_diff, SEXP Sigma, SEXP Miss_group_unique, SEXP Miss_group_counts);
 
 // Internal C++ functions
 cube emve_resamp(mat x, umat x_nonmiss, vec pu, int n, int p, vec theta0, mat G, int d, 
     uvec x_miss_group_match, umat miss_group_unique, uvec miss_group_counts, 
     umat miss_group_obs_col, umat miss_group_mis_col, uvec miss_group_p, int miss_group_n,
-    int nResample, int nSubsampleSize, vec cc, vec ck, int EM_maxits);
+    int nResample, int nSubsampleSize, uvec subsample_id, vec cc, vec ck, int EM_maxits);
 double emve_scale_constraint( mat sigma, umat miss_group_unique, uvec miss_group_counts );//ok
 double emve_scale(vec d, vec cc, vec ck); //ok
 vec fast_pmd(mat x_mu_diff, mat sigma, umat miss_group_unique, uvec miss_group_counts); //ok
 void subsampling(double* subsample_mem, unsigned int* subsamp_nonmis_mem, 
-    mat x, umat x_nonmiss, int nSubsampleSize, int p, int n);
+    mat x, umat x_nonmiss, int nSubsampleSize, int p, uvec subsample_id);
 mat concentrate_step(mat x, umat x_nonmiss, vec pu, double* pmd_mem, uvec x_miss_group_match,
     umat miss_group_unique, uvec miss_group_counts, 
     umat miss_group_obs_col, umat miss_group_mis_col, uvec miss_group_p, int miss_group_n,
@@ -56,7 +56,7 @@ vec iterEM( double* theta_mem, double* tobs_mem, int d, double* G_mem, int G_nco
 /***************************************************/
 SEXP emve_Rcpp(SEXP X, SEXP X_nonmiss, SEXP Pu, SEXP N, SEXP P, SEXP Theta0, SEXP GG, SEXP D, SEXP X_miss_group_match,
     SEXP Miss_group_unique, SEXP Miss_group_counts, SEXP Miss_group_obs_col, SEXP Miss_group_mis_col,
-    SEXP Miss_group_p, SEXP Miss_group_n, SEXP NResample, SEXP NSubsampleSize, SEXP CC, SEXP CK, SEXP Maxits)
+    SEXP Miss_group_p, SEXP Miss_group_n, SEXP NResample, SEXP NSubsampleSize, SEXP Subsample_ID, SEXP CC, SEXP CK, SEXP Maxits)
 {
     try{
         mat x = as<mat>(X);
@@ -78,6 +78,8 @@ SEXP emve_Rcpp(SEXP X, SEXP X_nonmiss, SEXP Pu, SEXP N, SEXP P, SEXP Theta0, SEX
 
         int nResample = as<int>(NResample);
         int nSubsampleSize = as<int>(NSubsampleSize);
+        uvec subsample_id = as<uvec>(Subsample_ID);
+        
         vec cc = as<vec>(CC);
         vec ck = as<vec>(CK);
         int EM_maxits = as<int>(Maxits);
@@ -86,7 +88,7 @@ SEXP emve_Rcpp(SEXP X, SEXP X_nonmiss, SEXP Pu, SEXP N, SEXP P, SEXP Theta0, SEX
         cube cand_list = emve_resamp(x, x_nonmiss, pu, n, p, theta0, G, d, 
                     x_miss_group_match, miss_group_unique, miss_group_counts, 
                     miss_group_obs_col, miss_group_mis_col, miss_group_p, miss_group_n,
-                    nResample, nSubsampleSize, cc, ck, EM_maxits);
+                    nResample, nSubsampleSize, subsample_id, cc, ck, EM_maxits);
             
         return wrap(cand_list);
     } catch( std::exception& __ex__ ){
@@ -131,9 +133,9 @@ SEXP fast_partial_mahalanobis(SEXP X_mu_diff, SEXP Sigma, SEXP Miss_group_unique
 cube emve_resamp(mat x, umat x_nonmiss, vec pu, int n, int p, vec theta0, mat G, int d, 
     uvec x_miss_group_match, umat miss_group_unique, uvec miss_group_counts, 
     umat miss_group_obs_col, umat miss_group_mis_col, uvec miss_group_p, int miss_group_n,
-    int nResample, int nSubsampleSize, vec cc, vec ck, int EM_maxits)
+    int nResample, int nSubsampleSize, uvec subsample_id, vec cc, vec ck, int EM_maxits)
 {
-    int nCand = 5;
+    int nCand = 1;
     try{
         // an array of intermediate results for each good conditioned subsample
         // for each nCand, it contains a matrix of p+2 X p 
@@ -170,7 +172,7 @@ cube emve_resamp(mat x, umat x_nonmiss, vec pu, int n, int p, vec theta0, mat G,
         uvec miss_grp_cts_half( miss_group_n); unsigned int* msgrpcth_mem = miss_grp_cts_half.memptr(); 
         umat miss_grp_oc_half(miss_group_n, p); unsigned int* msgrpoch_mem = miss_grp_oc_half.memptr(); 
         umat miss_grp_mc_half(miss_group_n, p); unsigned int* msgrpmch_mem = miss_grp_mc_half.memptr(); 
-        uvec miss_grp_p(n_half); unsigned int* msgrpph_mem = miss_grp_p.memptr();		
+        uvec miss_grp_p(n_half); unsigned int* msgrpph_mem = miss_grp_p.memptr();
 
         // Start resampling
         GetRNGstate(); /* set the seed from R? */
@@ -181,7 +183,7 @@ cube emve_resamp(mat x, umat x_nonmiss, vec pu, int n, int p, vec theta0, mat G,
             // keep resample until obtain a good subsample
             while( keep_subsamp)
             {
-                subsampling(subsample_mem, subsamp_nonmis_mem, x, x_nonmiss, nSubsampleSize, p, n);
+                subsampling(subsample_mem, subsamp_nonmis_mem, x, x_nonmiss, nSubsampleSize, p, subsample_id);
                 urowvec b = sum( subsample_nonmiss );
                 if( b.min() > 0 ){
                     cand_S = cov(subsample);
@@ -527,17 +529,15 @@ double emve_scale(vec d, vec cc, vec ck)
 // Misc functions
 /********************************************************************/
 void subsampling(double* subsample_mem, unsigned int* subsamp_nonmis_mem, 
-    mat x, umat x_nonmiss, int nSubsampleSize, int p, int n)
+    mat x, umat x_nonmiss, int nSubsampleSize, int p, uvec subsample_id)
 {
     mat subsamp( subsample_mem, nSubsampleSize, p, false, true);
     umat subsamp_nonmiss( subsamp_nonmis_mem, nSubsampleSize, p, false, true);
-    uvec indi(n);
-    for(int i = 0; i < n; i++) indi(i)=i;
-    indi = shuffle(indi);
+    uvec subsample_id_shuff = shuffle(subsample_id);
     for(int i = 0; i < nSubsampleSize; i++)
     {
-        subsamp.row(i) = x.row( indi(i) );
-        subsamp_nonmiss.row(i) = x_nonmiss.row( indi(i) );
+        subsamp.row(i) = x.row( subsample_id_shuff(i) );
+        subsamp_nonmiss.row(i) = x_nonmiss.row( subsample_id_shuff(i) );
     }
 }
 

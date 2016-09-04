@@ -3,8 +3,8 @@ useDynLib(GSE, .registration=TRUE)
 importFrom(MASS, mvrnorm)
 importFrom("graphics", "par")
 importFrom("grDevices", "dev.interactive")
-importFrom("stats", "mahalanobis", "cor", "mad", "median", "na.omit", "pchisq", "qchisq", "rnorm", "runif", "var")
-
+importFrom("stats", "mahalanobis", "cor", "mad", "median", "na.omit", "pchisq", "qchisq", "rnorm", "runif", "var", "cutree","dist","hclust","qbinom")
+importFrom("robustbase", "Qn")
 
 import(Rcpp)
 import(ggplot2)
