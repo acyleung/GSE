@@ -75,7 +75,7 @@ GSE(x, tol=1e-4, maxiter=150, method=c("bisquare","rocke"),
 \examples{
 set.seed(12)
 
-## generate data with 10% casewise contamination
+## generate 10-dimensional data with 10% casewise contamination
 n <- 100
 p <- 10
 A <- matrix(0.9, p, p)
@@ -94,4 +94,5 @@ slrt( getScatter(res.emve), A) ## LRT distances to the true covariance
 ## Using QC as initial
 res.qc <- GSE(x, init="qc")
 slrt( getScatter(res.qc), A) ## in general performs worse than if EMVE used as initials
+
 }

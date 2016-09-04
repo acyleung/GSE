@@ -42,14 +42,13 @@ gy.filt(x, alpha=c(0.95,0.95), bivarQt=0.99, bivarCellPr=0.1, miter=5)
 }
 \author{Andy Leung \email{andy.leung@stat.ubc.ca}, Claudio Agostinelli, Ruben H. Zamar, Victor J. Yohai}
 \seealso{
-  \code{\link{TSGS}}
+  \code{\link{TSGS}}, \code{\link{generate.cellcontam}}
 }
 \examples{
 set.seed(12345)
 
 # Generate 5% cell-wise contaminated normal data 
-# using a random correlation matrix with condition number 100
-x <- generate.cellcontam(n=100, p=10, cond=100, contam.size=5, contam.prop=0.05)
+x <- generate.cellcontam(n=100, p=10, cond=100, contam.size=5, contam.prop=0.05)$x
 
 ## Using univariate filter only
 xna <- gy.filt(x, alpha=c(0.95,0))

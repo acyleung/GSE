@@ -37,7 +37,7 @@
     return( v)
 }
 
-gy.filt <- function(x, alpha=c(0.95,0.95), combinQt=0.99, combinCellPr=0.1, miter=5){
+gy.filt <- function(x, alpha=c(0.95,0.95), bivarQt=0.99, bivarCellPr=0.1, miter=5){
 
     if( missing(alpha) ) alpha <- c(0.95, 0)
 
@@ -63,7 +63,7 @@ gy.filt <- function(x, alpha=c(0.95,0.95), combinQt=0.99, combinCellPr=0.1, mite
                 pmd[which(pmd > 0)] <- .gy.filt.uni.it(pmd[which(pmd > 0)], alpha=alpha[2], df=2, miter=miter)
                 m[,c(j,k)] <- m[,c(j,k)] + 1*is.na(pmd)
             }
-        u[m > qbinom(combinQt, mn, prob=combinCellPr) & mn > 0] <- 0
+        u[m > qbinom(bivarQt, mn, prob=bivarCellPr) & mn > 0] <- 0
     }
     xna <- x
     xna[u == 0] <- NA

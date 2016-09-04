@@ -1,5 +1,5 @@
 
-TSGS <- function(x, alpha=c(0.95,0.95), combinQt=0.99, combinCellPr=0.1, 
+TSGS <- function(x, alpha=c(0.95,0.95), bivarQt=0.99, bivarCellPr=0.1, 
             partial.impute=FALSE, tol=1e-4, maxiter=150, method=c("bisquare","rocke"), 
             init=c("emve","qc","huber","imputed","emve_c"), mu0, S0, ...){
             
@@ -20,7 +20,7 @@ TSGS <- function(x, alpha=c(0.95,0.95), combinQt=0.99, combinCellPr=0.1,
     if( p >200 | p < 2 ) stop("Column dimension of 'x' must be in between 2 and 200.")
 
     ## 1) filter step 
-    xf <- gy.filt(x, alpha=alpha, combinQt=combinQt, combinCellPr=combinCellPr)
+    xf <- gy.filt(x, alpha=alpha, bivarQt=bivarQt, bivarCellPr=bivarCellPr)
 
     ## 2) partial imputation step as suggested in the rejoinder of Agostinelli et al (2015)
     xf_pi <- xf
