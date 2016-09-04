@@ -15,7 +15,7 @@ emve <- function(x, maxits=5, sampling=c("uniform","cluster"), n.resample, n.sub
     if( missing(n.resample) & sampling == "uniform" ) n.resample <- 500    
     if( missing(n.sub.size) & sampling == "uniform" ) n.sub.size <- floor( (p+1)/(1-mean(is.na(x))) )
     ## EMVE_C setting
-    if( missing(n.resample) & sampling == "cluster" ) n.resample <- 50    
+    if( missing(n.resample) & sampling == "cluster" ) n.resample <- 15 
     if( missing(n.sub.size) & sampling == "cluster" ) n.sub.size <- 2*floor( (p+1)/(1-mean(is.na(x))) )
     if( n.resample < 1 ) stop("Number of resampling must be >= 1.")
     if( n.sub.size < p+1 ) stop("Subsample size must be at least p+1.")
@@ -86,7 +86,7 @@ emve <- function(x, maxits=5, sampling=c("uniform","cluster"), n.resample, n.sub
     if( missing(sampling) ) sampling <- "uniform"
     
     ## EMVE setting
-    if( missing(n.resample) & sampling == "cluster" ) n.resample <- 50  
+    if( missing(n.resample) & sampling == "cluster" ) n.resample <- 15
     if( missing(n.sub.size) & sampling == "uniform" ) n.sub.size <- floor( (p+1)/(1-mean(is.na(x))) )
     ## EMVE_C setting
     if( missing(n.resample) & sampling == "cluster" ) n.resample <- 500     

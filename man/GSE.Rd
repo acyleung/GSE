@@ -7,7 +7,7 @@
 }
 \usage{
 GSE(x, tol=1e-4, maxiter=150, method=c("bisquare","rocke"), 
-    init=c("emve","emve_c","qc","huber","imputed"), mu0, S0, ...)
+    init=c("emve","qc","huber","imputed","emve_c"), mu0, S0, ...)
 }
 \arguments{
   \item{x}{a matrix or data frame. May contain missing values, but cannot contain columns with completely missing entries. }
@@ -16,8 +16,9 @@ GSE(x, tol=1e-4, maxiter=150, method=c("bisquare","rocke"),
   \item{method}{which loss function to use: 'bisquare', 'rocke'.}
   \item{init}{
       type of initial estimator. Currently this can either be "emve" (EMVE, see Danilov et al., 2012),
-      "emve_c" (EMVE_C, see Leung and Zamar, 2016), "qc" (QC, see Danilov et al., 2012), 
-      "huber" (Huber Pairwise, see Danilov et al., 2012), or "imputed" (Imputed S-estimator, see the rejoinder in Agostinelli et al., 2015).
+      "qc" (QC, see Danilov et al., 2012), "huber" (Huber Pairwise, see Danilov et al., 2012), 
+      "imputed" (Imputed S-estimator, see the rejoinder in Agostinelli et al., 2015), or
+      "emve_c" (EMVE_C, see Leung and Zamar, 2016).
       Default is "emve". If \code{mu0} and \code{S0} are provided, this argument is ignored.
   }
   \item{mu0}{optional vector of initial location estimate}

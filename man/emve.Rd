@@ -10,7 +10,7 @@
   \item{x}{a matrix or data frame. May contain missing values, but cannot contain columns with completely missing entries.}
   \item{maxits}{integer indicating the maximum number of iterations of Gaussian MLE calculation for each subsample. Default is 5.}
   \item{sampling}{which sampling is to use: 'uniform' or 'cluster' (see Leung and Zamar, 2016). Default is 'uniform'.}
-  \item{n.resample}{integer indicating the number of subsamples. Default is 50 for clustering-based subsampling and 500 for uniform subsampling.}
+  \item{n.resample}{integer indicating the number of subsamples. Default is 15 for clustering-based subsampling and 500 for uniform subsampling.}
   \item{n.sub.size}{integer indicating the sizes of each subsample. Default is 2(p+1)/a for clustering-based subsampling and (p+1)/a for uniform subsampling, where a is proportion of non-missing cells.}
   \item{seed}{optional starting value for random generator. Default is seed = 1000.} 
 }

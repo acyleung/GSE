@@ -1,7 +1,7 @@
 ###########################################################
 ## Generalized S-Estimator
 ###########################################################
-GSE <- function(x, tol=1e-4, maxiter=150, method=c("bisquare","rocke"), init=c("emve","emve_c","qc","huber","imputed"), mu0, S0, ...)
+GSE <- function(x, tol=1e-4, maxiter=150, method=c("bisquare","rocke"), init=c("emve","qc","huber","imputed","emve_c"), mu0, S0, ...)
 {
     xcall <- match.call()
 
