@@ -54,7 +54,6 @@ emve <- function(x, maxits=5, sampling=c("uniform","cluster"), n.resample, n.sub
     S0 <- diag(apply(x_sort$x, 2, var, na.rm=T))
     x_sort <- c(x_sort, .CovEM.setparam(p, mu0, S0))
 
-    n.sub.size <- floor( (p+1)/(1-mean(is.na(x))) )
     res <- with(x_sort, .emve.init(x, x_nonmiss, pu, n, p, theta, G.ind-1, length(theta),x.miss.group.match,
         miss.group.unique, miss.group.counts, miss.group.obs.col, miss.group.mis.col, 
         miss.group.p, miss.group.n, n.resample, n.sub.size, maxits, sampling, seed))
