@@ -15,10 +15,10 @@ GSE(x, tol=1e-4, maxiter=150, method=c("bisquare","rocke"),
   \item{maxiter}{maximum number of iterations for the GSE algorithm. Default is 150.}
   \item{method}{which loss function to use: 'bisquare', 'rocke'.}
   \item{init}{
-      type of initial estimator. Currently this can either be "emve" (EMVE, see Danilov et al., 2012),
+      type of initial estimator. Currently this can either be "emve" (EMVE with uniform sampling, see Danilov et al., 2012),
       "qc" (QC, see Danilov et al., 2012), "huber" (Huber Pairwise, see Danilov et al., 2012), 
       "imputed" (Imputed S-estimator, see the rejoinder in Agostinelli et al., 2015), or
-      "emve_c" (EMVE_C, see Leung and Zamar, 2016).
+      "emve_c" (EMVE_C with cluster sampling, see Leung and Zamar, 2016).
       Default is "emve". If \code{mu0} and \code{S0} are provided, this argument is ignored.
   }
   \item{mu0}{optional vector of initial location estimate}

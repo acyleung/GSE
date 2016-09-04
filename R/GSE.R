@@ -50,16 +50,14 @@ GSE <- function(x, tol=1e-4, maxiter=150, method=c("bisquare","rocke"), init=c("
     if( xor(missing(mu0), missing(S0)) ) warning("Both 'mu0' and 'S0' must be provided. Default 'init' is used...")
     if( missing(mu0) || missing(S0) ){
         init.res <- switch( init,
-            emve= {res <- emve(x, sampling="uniform", ...); list(mu=res@mu, S=res@S) },
-            emve_c= {res <- emve(x, sampling="cluster", ...); list(mu=res@mu, S=res@S) },
-            qc ={res <- HuberPairwise(x, psi="sign", computePmd = FALSE); list(mu=res@mu, S=res@S)},
-            huber = {res <- HuberPairwise(x, psi="huber", computePmd = FALSE, ...); list(mu=res@mu, S=res@S)},
-            imputed = {ximp_simp <- .impute.simple(x, apply(x, 2, median, na.rm=TRUE)); 
-                    res <- rrcov::CovSest(ximp_simp, method=method);
-                    list(mu=res@center, S=res@cov) }
+            emve= {emve(x, sampling="uniform", ...)},
+            qc ={HuberPairwise(x, psi="sign", computePmd = FALSE)},
+            huber = {HuberPairwise(x, psi="huber", computePmd = FALSE, ...)},
+            imputed = {ImpS(x, ...)},
+            emve_c= {emve(x, sampling="cluster", ...)}
             )
-        S0 <- init.res$S
-        mu0 <- init.res$mu
+        S0 <- init.res@S
+        mu0 <- init.res@mu
     } 
     S0.chol <- tryCatch( chol(S0), error=function(e) NA)
     if( !is.matrix(S0.chol) )  stop("Estimated initial covariance matrix 'S0' is not positive definite.")

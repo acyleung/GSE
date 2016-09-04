@@ -64,7 +64,7 @@
         R[j, i] <- R[i, j] <- (scalefn( na.omit(x.sc[, i] + x.sc[, j]) )^2 - 
                                  scalefn( na.omit(x.sc[, i] - x.sc[, j]) )^2)/4
     }
-    if(any(is.na(x))) x.sc <- .impute.simple(x, rep(0,p))
+    if(any(is.na(x))) x.sc <- .impute.coord.med(x)
     R.eigen <- eigen(R)
     R.eigen.L <- R.eigen$values
     p0 <- rev(which(R.eigen.L > 0))[1]
