@@ -9,13 +9,13 @@
 \arguments{
   \item{x}{a matrix or data frame. May contain missing values, but cannot contain columns with completely missing entries.}
   \item{maxits}{integer indicating the maximum number of iterations of Gaussian MLE calculation for each subsample. Default is 5.}
-  \item{sampling}{which sampling is to use: 'uniform' or 'cluster' (see Leung and Zamar, 2016). Default is 'uniform'.}
+  \item{sampling}{which sampling scheme is to use: 'uniform' or 'cluster' (see Leung and Zamar, 2016). Default is 'uniform'.}
   \item{n.resample}{integer indicating the number of subsamples. Default is 15 for clustering-based subsampling and 500 for uniform subsampling.}
   \item{n.sub.size}{integer indicating the sizes of each subsample. Default is 2(p+1)/a for clustering-based subsampling and (p+1)/a for uniform subsampling, where a is proportion of non-missing cells.}
   \item{seed}{optional starting value for random generator. Default is seed = 1000.} 
 }
 \details{
-  This function computes EMVE as described in Danilov et al. (2012). Two subsampling algorithms can be used for computing EMVE:
+  This function computes EMVE as described in Danilov et al. (2012). Two subsampling schemes can be used for computing EMVE:
   uniform subsampling and the clustering-based subsampling as described in Leung and Zamar (2016).
   For uniform subsampling, the number of subsamples must be large to ensure high breakdown point. For clustering-based 
   subsampling, the number of subsamples can be smaller. The subsample size \eqn{n_0} must be chosen to be larger than \eqn{p} to avoid singularity. 

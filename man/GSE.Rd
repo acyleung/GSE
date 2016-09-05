@@ -29,9 +29,9 @@ GSE(x, tol=1e-4, maxiter=150, method=c("bisquare","rocke"),
    This function computes GSE (Danilov et al., 2012) and GRE (Leung and Zamar, 2016). The estimator requires a robust positive definite 
    initial estimator. This initial estimator is required to ``re-scale" the partial square mahalanobis distance for 
    the different missing pattern, in which a single scale parameter is not enough. This function currently allows two 
-   main different initial estimators: EMVE (the default; see \code{\link{emve}} and Huberized Pairwise 
-   (see \code{\link{HuberPairwise}}). GSE using the latter estimator when the tuning constant
-   \eqn{c0} is 0 is referred to as QGSE in Danilov et al. (2012). Numerical results have shown that GSE with EMVE as 
+   main initial estimators: EMVE (the default; see \code{\link{emve}} and Huberized Pairwise 
+   (see \code{\link{HuberPairwise}}). GSE using Huberized Pairwise with sign psi function is referred to as QGSE in Danilov et al. (2012). 
+   Numerical results have shown that GSE with EMVE as 
    initial has better performance (in both efficiency and robustness), but computing time can be longer. 
 }
 \value{

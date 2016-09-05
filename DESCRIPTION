@@ -3,7 +3,7 @@ Type: Package
 Title: Robust Estimation in the
         Presence of Cellwise and Casewise Contamination and Missing Data
 Version: 4.0
-Date: 2016-09-01
+Date: 2016-09-04
 Author: Andy Leung, Mike Danilov, Victor Yohai, Ruben Zamar
 Maintainer: Andy Leung <andy.leung@stat.ubc.ca>
 Description: Robust Estimation of Multivariate Location and Scatter in the

@@ -37,9 +37,7 @@
     return( v)
 }
 
-gy.filt <- function(x, alpha=c(0.95,0.95), bivarQt=0.99, bivarCellPr=0.1, miter=5){
-
-    if( missing(alpha) ) alpha <- c(0.95, 0)
+gy.filt <- function(x, alpha=c(0.95,0.85), bivarQt=0.99, bivarCellPr=0.1, miter=5){
 
     x <- as.matrix(x)
     n <- nrow(x)
@@ -49,6 +47,7 @@ gy.filt <- function(x, alpha=c(0.95,0.95), bivarQt=0.99, bivarCellPr=0.1, miter=
     if( alpha[1] > 0) u <- 1-is.na(apply(xs^2, 2, .gy.filt.uni.it, alpha=alpha[1], df=1, miter=miter))
     m <- matrix(0, n, p)
     mn <- matrix(0, n, p)
+
     if( alpha[2] > 0){
         for(j in 1:(p-1))
             for(k in (j+1):p){

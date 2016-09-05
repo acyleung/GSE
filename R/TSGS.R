@@ -1,5 +1,5 @@
 
-TSGS <- function(x, alpha=c(0.95,0.95), bivarQt=0.99, bivarCellPr=0.1, 
+TSGS <- function(x, alpha=c(0.95,0.85), bivarQt=0.99, bivarCellPr=0.1, 
             partial.impute=FALSE, tol=1e-4, maxiter=150, method=c("bisquare","rocke"), 
             init=c("emve","qc","huber","imputed","emve_c"), mu0, S0, ...){
             

@@ -5,13 +5,13 @@
   Flags cellwise outliers detected using Gervini-Yohai filter as described in Agostinelli et al. (2015) and Leung and Zamar (2016). 
 }
 \usage{
-gy.filt(x, alpha=c(0.95,0.95), bivarQt=0.99, bivarCellPr=0.1, miter=5)
+gy.filt(x, alpha=c(0.95,0.85), bivarQt=0.99, bivarCellPr=0.1, miter=5)
 }
 \arguments{
   \item{x}{a matrix or data frame.}
   \item{alpha}{a vector of the quantiles of the univariate and bivariate reference distributions, respectively. 
   Filtering turns off when alpha is 0. For univariate filtering only, \code{alpha=c(0.95,0)}.
-  Default value is \code{c(0.95,0.95)}.}
+  Default value is \code{c(0.95,0.85)}.}
   \item{bivarQt}{quantile of the binomial model for the number of flagged pairs in the bivariate filter. Default is 0.99.}
   \item{bivarCellPr}{probability of the binomial model for the number of flagged pairs in the bivariate filter. Default is 0.1.}
   \item{miter}{maximum number of iteration of filtering. Default value is 5.}

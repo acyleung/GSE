@@ -2,7 +2,7 @@
 \alias{ImpS}
 \title{Imputed S-estimator}
 \description{
-  Computes the simple three-step estimator as described in the rejoinder in Agostinelli et al. (2015).
+  Computes the simple three-step estimator as described in the rejoinder of Agostinelli et al. (2015).
 }
 \usage{
 ImpS(x, alpha=0.95, method=c("bisquare","rocke"), init=c("emve","emve_c"), ...)

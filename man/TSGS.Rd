@@ -6,7 +6,7 @@
   for data with cell-wise and case-wise contamination. 
 }
 \usage{
-TSGS(x, alpha=c(0.95,0.95), bivarQt=0.99, bivarCellPr=0.1, 
+TSGS(x, alpha=c(0.95,0.85), bivarQt=0.99, bivarCellPr=0.1, 
     partial.impute=FALSE, tol=1e-4, maxiter=150, method=c("bisquare","rocke"),
     init=c("emve","qc","huber","imputed","emve_c"), mu0, S0, ...)
 }
@@ -14,7 +14,7 @@ TSGS(x, alpha=c(0.95,0.95), bivarQt=0.99, bivarCellPr=0.1,
   \item{x}{a matrix or data frame.}
   \item{alpha}{a vector of the quantiles of the univariate and bivariate reference distributions, respectively. 
   Filtering turns off when alpha is 0. For univariate filtering only, \code{alpha=c(0.95,0)}.
-  Default value is \code{c(0.95,0.95)}.}
+  Default value is \code{c(0.95,0.85)}.}
   \item{bivarQt}{quantile of the binomial model for the number of flagged pairs in the bivariate filter. Default is 0.99.}
   \item{bivarCellPr}{probability of the binomial model for the number of flagged pairs in the bivariate filter. Default is 0.1.}
   \item{partial.impute}{whether partial imputation is used prior to estimation (see details). The default is \code{FALSE}.}
