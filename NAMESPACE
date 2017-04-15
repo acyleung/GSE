@@ -9,6 +9,7 @@ importFrom("utils", "capture.output")
 
 import(Rcpp)
 import(ggplot2)
+import(colorspace)
 import(methods)
 
 exportPattern("^[[:alpha:]]+")
