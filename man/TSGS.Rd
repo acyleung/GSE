@@ -81,25 +81,24 @@ set.seed(12345)
 x <- generate.cellcontam(n=100, p=10, cond=100, contam.size=5, contam.prop=0.05)
 
 ## Using MLE
-slrt( cov(x$x), x$A)
+slrt(cov(x$x), x$A)
 
-## Using Fast-S
-slrt( rrcov:::CovSest(x$x)@cov, x$A)
+## Using S-estimator
+slrt(GSE(x$x)@S, x$A)
 
 ## Using 2SGS
-slrt( TSGS(x$x)@S, x$A)
-
+slrt(TSGS(x$x)@S, x$A)
 
 # Generate 5% case-wise contaminated normal data
 # using a random correlation matrix with condition number 100
 x <- generate.casecontam(n=100, p=10, cond=100, contam.size=15, contam.prop=0.05)
 
 ## Using MLE
-slrt( cov(x$x), x$A)
+slrt(cov(x$x), x$A)
 
-## Using Fast-S
-slrt( rrcov:::CovSest(x$x)@cov, x$A)
+## Using S-estimator
+slrt(GSE(x$x)@S, x$A)
 
 ## Using 2SGS
-slrt( TSGS(x$x)@S, x$A)
+slrt(TSGS(x$x)@S, x$A)
 }

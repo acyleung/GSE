@@ -1,6 +1,6 @@
 useDynLib(GSE, .registration=TRUE)
 
-importFrom(MASS, mvrnorm)
+importFrom("MASS", "mvrnorm")
 importFrom("graphics", "par")
 importFrom("grDevices", "dev.interactive")
 importFrom("stats", "mahalanobis", "cor", "mad", "median", "na.omit", "pchisq", "qchisq", "rnorm", "runif", "var", "cutree","dist","hclust","qbinom")
